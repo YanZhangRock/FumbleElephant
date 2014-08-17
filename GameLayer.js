@@ -40,12 +40,14 @@ var GameLayer = cc.Layer.extend({
     },
 
     showElephFrag: function() {
-        if( this.showElephTimerIdx >= this.elephants.length ) return;
+        if( this.showElephTimerIdx >= this.elephants.length ) {
+            this.unschedule( this.showElephFrag );
+            return;
+        }
         var idx = this.elephSeq[this.showElephTimerIdx];
         this.elephants[idx].setVisible( true );
         this.elephants[idx].setTestHit( true );
         this.elephants[idx].setOpacity( 180 );
-        cc.log("~~~~"+idx);
         this.showElephTimerIdx++;
     },
 
