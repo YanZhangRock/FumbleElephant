@@ -4,8 +4,15 @@
 var GameLayer = cc.Layer.extend({
     elephants: new Array(),
     elephSeq: new Array(),
+    timerLabel: null,
+    scoreLabel: null,
+    titleLabel: null,
+    restTime: 0,
+    score: 0,
+    restartBtn: null,
     curElephIdx: 0,
     showElephTimerIdx: 0,
+    isFumbleReady: false,
 
     ctor: function(){
         this._super();
@@ -14,7 +21,52 @@ var GameLayer = cc.Layer.extend({
             var elephant = new Elephant( i );
             this.addElephant( elephant );
         }
-        return true;
+        // restart label
+        var label = new cc.LabelTTF("Restart", "Arial", 60);
+        var self = this;
+        var restart = new cc.MenuItemLabel(label, function(){ self.gameStart() } );
+        var menu = new cc.Menu(restart);
+        menu.x = g_size.width * 100;
+        menu.y = g_size.height * 100;
+        this.restartBtn = menu;
+        this.addChild(menu);
+        // title label
+        this.titleLabel = new cc.LabelTTF( "盲人摸象", "Arial", 36, cc.size(g_size.width * 0.85, 100), cc.TEXT_ALIGNMENT_CENTER );
+        this.titleLabel.attr({
+            x: g_size.width * 0.45,
+            y: g_size.height * 0.9,
+            anchorX: 0.5,
+            anchorY: 0.5
+        });
+        this.addChild(this.titleLabel);
+        // timer label
+        this.timerLabel = new cc.LabelTTF( "", "Arial", 36, cc.size(g_size.width * 0.85, 320), cc.TEXT_ALIGNMENT_LEFT );
+        this.timerLabel.attr({
+            x: g_size.width * 0.5,
+            y: g_size.height * 0.7,
+            anchorX: 0.5,
+            anchorY: 0.5
+        });
+        this.addChild(this.timerLabel);
+        // score label
+        this.scoreLabel = new cc.LabelTTF( "", "Arial", 36, cc.size(g_size.width * 0.85, 320), cc.TEXT_ALIGNMENT_LEFT );
+        this.scoreLabel.attr({
+            x: g_size.width * 1.0,
+            y: g_size.height * 0.7,
+            anchorX: 0.5,
+            anchorY: 0.5
+        });
+        this.addChild(this.scoreLabel);
+    },
+
+    setRestTime: function( restTime ) {
+        this.restTime = restTime;
+        this.timerLabel.setString( "剩余时间: " + this.restTime.toString() );
+    },
+
+    setScore: function( score ) {
+        this.score = score;
+        this.scoreLabel.setString( "得分: " + this.score.toString() );
     },
 
     addElephant: function( elephant ){
@@ -23,6 +75,14 @@ var GameLayer = cc.Layer.extend({
         elephant.setVisible( false );
         elephant.setTestHit( false );
         this.addChild( elephant );
+    },
+
+    clearElephant: function() {
+        for ( var i in this.elephants ) {
+            this.elephants[i].setVisible( false );
+            this.elephants[i].setTestHit( false );
+            this.elephants[i].setOpacity( Elephant.UNCLICK_OPACITY );
+        }
     },
 
     makeElephSeq: function() {
@@ -40,19 +100,84 @@ var GameLayer = cc.Layer.extend({
     },
 
     showElephFrag: function() {
+        if( this.showElephTimerIdx >= this.elephants.length-1 ) {
+            this.isFumbleReady = true;
+        }
         if( this.showElephTimerIdx >= this.elephants.length ) {
+            this.showElephTimerIdx = 0;
             this.unschedule( this.showElephFrag );
             return;
         }
         var idx = this.elephSeq[this.showElephTimerIdx];
         this.elephants[idx].setVisible( true );
         this.elephants[idx].setTestHit( true );
-        this.elephants[idx].setOpacity( 180 );
+        this.elephants[idx].setOpacity( Elephant.UNCLICK_OPACITY );
         this.showElephTimerIdx++;
     },
 
-    gameStart: function() {
+    onClickElephFrag: function( eleph ) {
+        if( this.isCorrectSeq( eleph.id ) ) {
+            eleph.setOpacity( Elephant.CLICK_OPACITY );
+            this.score += GameLayer.CORRECT_SCORE;
+            this.setScore( this.score );
+            this.nextGuess();
+        } else {
+            this.score += GameLayer.WRONG_SCORE;
+            this.setScore( this.score );
+            if( this.score <= GameLayer.LOSE_SCORE ) {
+                this.gameEnd();
+            }
+            new TrembleEffect( eleph );
+        }
+    },
+
+    isCorrectSeq: function( idx ) {
+        if( !this.isFumbleReady ) return false;
+        return idx == this.elephSeq[this.curElephIdx];
+    },
+
+    nextGuess: function() {
+        if( this.curElephIdx < this.elephants.length-1 ) {
+            this.curElephIdx++;
+        } else {
+            this.createElephant();
+        }
+    },
+
+    createElephant: function() {
+        this.clearElephant();
         this.makeElephSeq();
-        this.schedule( this.showElephFrag, 0.5 );
+        this.isFumbleReady = false;
+        this.schedule( this.showElephFrag, GameLayer.ELEPH_SHOW_INTERVAL );
+    },
+
+    checkTimeUp: function() {
+      if( this.restTime > 0 ) {
+          this.setRestTime( --this.restTime );
+      } else {
+          this.gameEnd();
+      }
+    },
+
+    gameEnd: function() {
+        this.unschedule( this.checkTimeUp );
+        this.clearElephant();
+        this.restartBtn.x = g_size.width * 0.5;
+        this.restartBtn.y = g_size.height * 0.5;
+    },
+
+    gameStart: function() {
+        this.restartBtn.x = g_size.width * 100;
+        this.restartBtn.y = g_size.height * 100;
+        this.setRestTime( GameLayer.TOTAL_TIME );
+        this.setScore( 0 );
+        this.schedule( this.checkTimeUp, 1 );
+        this.createElephant();
     }
 })
+
+GameLayer.ELEPH_SHOW_INTERVAL = 0.3;
+GameLayer.TOTAL_TIME = 60;
+GameLayer.CORRECT_SCORE = 10;
+GameLayer.WRONG_SCORE = -2;
+GameLayer.LOSE_SCORE = -10;

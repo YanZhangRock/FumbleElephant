@@ -49,9 +49,7 @@ var Elephant = cc.Sprite.extend({
         var rect = cc.rect(0, 0, s.width, s.height);
         if (!cc.rectContainsPoint(rect, locationInNode)) return false;
         //on hit
-        target.opacity = 255;
-        cc.log("elephant id: "+target+", "+target.id);
-        var effect = new TrembleEffect( target );
+        this.mgr.onClickElephFrag( this );
         return true;
     },
 
@@ -59,3 +57,6 @@ var Elephant = cc.Sprite.extend({
         return true;
     }
 });
+
+Elephant.UNCLICK_OPACITY = 180;
+Elephant.CLICK_OPACITY = 255;
