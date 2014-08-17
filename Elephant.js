@@ -50,6 +50,7 @@ var Elephant = cc.Sprite.extend({
         if (!cc.rectContainsPoint(rect, locationInNode)) return false;
         //on hit
         target.opacity = 255;
+        //test
         cc.log("elephant id: "+target+", "+target.id);
         return true;
     },
