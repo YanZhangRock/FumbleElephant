@@ -2,15 +2,15 @@ var res = {
     HelloWorld_png : "res/HelloWorld.png",
     CloseNormal_png : "res/CloseNormal.png",
     CloseSelected_png : "res/CloseSelected.png",
-    Eleph0_png : "res/1.png",
-    Eleph1_png : "res/2.png",
-    Eleph2_png : "res/3.png",
-    Eleph3_png : "res/4.png",
-    Eleph4_png : "res/5.png",
-    Eleph5_png : "res/6.png",
-    Eleph6_png : "res/7.png",
-    Eleph7_png : "res/8.png",
-    Eleph8_png : "res/9.png"
+    0 : "res/1.png",
+    1 : "res/2.png",
+    2 : "res/3.png",
+    3 : "res/4.png",
+    4 : "res/5.png",
+    5 : "res/6.png",
+    6 : "res/7.png",
+    7 : "res/8.png",
+    8 : "res/9.png"
 };
 
 var g_resources = [];
