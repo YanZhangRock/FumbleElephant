@@ -29,15 +29,7 @@ var ElephantLayer = cc.Layer.extend({
 //        helloLabel.y = 0;
 //        // add the label as a child to this layer
 //        this.addChild(helloLabel, 5);
-        // add "HelloWorld" splash screen"
-//        this.sprite = new cc.Sprite(res.HelloWorld_png);
-//        this.sprite.attr({
-//            x: g_size.width / 2,
-//            y: g_size.height / 2,
-//            scale: 0.5,
-//            rotation: 180
-//        });
-//        this.addChild(this.sprite, 0);
+
 //        this.sprite.runAction(
 //            cc.sequence(
 //                cc.rotateTo(2, 0),
@@ -60,8 +52,8 @@ var ElephantScene = cc.Scene.extend({
         g_size = cc.winSize;
         var layer = new ElephantLayer();
         var gameLayer = new GameLayer();
-        this.addChild(layer);
-        this.addChild(gameLayer);
+        this.addChild(layer, 0);
+        this.addChild(gameLayer, 999);
         gameLayer.gameStart();
     }
 });

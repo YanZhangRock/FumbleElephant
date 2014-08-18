@@ -17,7 +17,7 @@ var Elephant = cc.Sprite.extend({
     isTestHit: true,
 
     ctor:function ( arg ) {
-        this._super( res["Eleph".concat( arg.toString().concat("_png") )] );
+        this._super( res[arg.toString()] );
         this.id = arg;
         this.attr({
             x: g_size.width * g_elephCfg.initPos[this.id][0],

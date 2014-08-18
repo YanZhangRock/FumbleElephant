@@ -10,26 +10,22 @@ var GameLayer = cc.Layer.extend({
     restTime: 0,
     score: 0,
     restartBtn: null,
+    shareBtn: null,
     curElephIdx: 0,
     showElephTimerIdx: 0,
     isFumbleReady: false,
 
     ctor: function(){
         this._super();
-        // elephant
-        for( var i=0; i<9; i++ ) {
-            var elephant = new Elephant( i );
-            this.addElephant( elephant );
-        }
         // restart label
-        var label = new cc.LabelTTF("Restart", "Arial", 60);
+        var label = new cc.LabelTTF("重新开始", "Arial", 60);
         var self = this;
         var restart = new cc.MenuItemLabel(label, function(){ self.gameStart() } );
         var menu = new cc.Menu(restart);
         menu.x = g_size.width * 100;
         menu.y = g_size.height * 100;
         this.restartBtn = menu;
-        this.addChild(menu);
+        this.addChild(menu, 0);
         // title label
         this.titleLabel = new cc.LabelTTF( "盲人摸象", "Arial", 36, cc.size(g_size.width * 0.85, 100), cc.TEXT_ALIGNMENT_CENTER );
         this.titleLabel.attr({
@@ -38,7 +34,7 @@ var GameLayer = cc.Layer.extend({
             anchorX: 0.5,
             anchorY: 0.5
         });
-        this.addChild(this.titleLabel);
+        this.addChild(this.titleLabel, 0);
         // timer label
         this.timerLabel = new cc.LabelTTF( "", "Arial", 36, cc.size(g_size.width * 0.85, 320), cc.TEXT_ALIGNMENT_LEFT );
         this.timerLabel.attr({
@@ -47,7 +43,7 @@ var GameLayer = cc.Layer.extend({
             anchorX: 0.5,
             anchorY: 0.5
         });
-        this.addChild(this.timerLabel);
+        this.addChild(this.timerLabel, 0);
         // score label
         this.scoreLabel = new cc.LabelTTF( "", "Arial", 36, cc.size(g_size.width * 0.85, 320), cc.TEXT_ALIGNMENT_LEFT );
         this.scoreLabel.attr({
@@ -56,7 +52,12 @@ var GameLayer = cc.Layer.extend({
             anchorX: 0.5,
             anchorY: 0.5
         });
-        this.addChild(this.scoreLabel);
+        this.addChild(this.scoreLabel, 0);
+        // elephant
+        for( var i=0; i<9; i++ ) {
+            var elephant = new Elephant( i );
+            this.addElephant( elephant );
+        }
     },
 
     setRestTime: function( restTime ) {
@@ -74,7 +75,7 @@ var GameLayer = cc.Layer.extend({
         elephant.mgr = this;
         elephant.setVisible( false );
         elephant.setTestHit( false );
-        this.addChild( elephant );
+        this.addChild( elephant, 999 );
     },
 
     clearElephant: function() {
@@ -159,16 +160,24 @@ var GameLayer = cc.Layer.extend({
       }
     },
 
+    showEndUI: function( isShow ) {
+        if( isShow ) {
+            this.restartBtn.x = g_size.width * 0.5;
+            this.restartBtn.y = g_size.height * 0.5;
+        } else {
+            this.restartBtn.x = g_size.width * 100;
+            this.restartBtn.y = g_size.height * 100;
+        }
+    },
+
     gameEnd: function() {
         this.unschedule( this.checkTimeUp );
         this.clearElephant();
-        this.restartBtn.x = g_size.width * 0.5;
-        this.restartBtn.y = g_size.height * 0.5;
+        this.showEndUI( true );
     },
 
     gameStart: function() {
-        this.restartBtn.x = g_size.width * 100;
-        this.restartBtn.y = g_size.height * 100;
+        this.showEndUI( false );
         this.setRestTime( GameLayer.TOTAL_TIME );
         this.setScore( 0 );
         this.schedule( this.checkTimeUp, 1 );
