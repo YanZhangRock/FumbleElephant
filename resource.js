@@ -3,7 +3,7 @@ var res = {
     CloseNormal_png : "res/CloseNormal.png",
     CloseSelected_png : "res/CloseSelected.png",
     g : "res/grey.png",
-    s : "res/share.png",
+    Share : "res/share.png",
     0 : "res/1.png",
     1 : "res/2.png",
     2 : "res/3.png",

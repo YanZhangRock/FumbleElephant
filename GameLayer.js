@@ -236,7 +236,7 @@ var GameLayer = cc.Layer.extend({
     shareResult: function() {
         this.addCoverBtn();
         this.state = GameLayer.STATE.SHARE;
-        this.shareSprite = new cc.Sprite( res.s );
+        this.shareSprite = new cc.Sprite( res.Share );
         this.shareSprite.attr({
             x: g_size.width * 0.7,
             y: g_size.height * 0.9,
